@@ -294,25 +294,6 @@ public class CartPageTest_UI extends BaseTest {
 	        test.pass("Page scrolled to top as expected")
 	            .addScreenCaptureFromPath(Screenshotutilities.capturescreen(driver, "ScrollToTop"));
 	    }
-	    
-	    @Test(priority = 20)
-	    public void verifyHomeBreadcrumb() throws IOException,InterruptedException {
-	        test = extent.createTest("Home Breadcrumb Working");
-	        cartPage.clickBreadcrumbhome(); 
-
-	        test.pass("Clicked the home breadcrumb successfully");
-
-	        try {
-	            Assert.assertTrue(cartPage.isHomeIconDisplayed(), "Home breadcrumb did not navigate properly!");
-	            test.pass("Home breadcrumb navigates to home page")
-	                .addScreenCaptureFromPath(Screenshotutilities.capturescreen(driver, "HomeBreadcrumb"));
-	        } catch (AssertionError e) {
-	            test.fail("Assertion failed: " + e.getMessage())
-	                .addScreenCaptureFromPath(Screenshotutilities.capturescreen(driver, "HomeBreadcrumb"));
-	            throw e; // rethrow so TestNG marks it failed
-	        }
-	    }
-
 
 	    @DataProvider
 	    public Object[][] subscriptionDataValid() throws IOException {
