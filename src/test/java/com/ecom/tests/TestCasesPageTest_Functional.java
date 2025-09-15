@@ -4,6 +4,7 @@ import org.testng.annotations.Test;
 import java.io.IOException;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
 import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 
@@ -309,7 +310,7 @@ public class TestCasesPageTest_Functional extends BaseTest {
         }
     }
 
-    @Test(priority = 15, dataProvider = "validSubscriptionData")
+    @Test(priority = 16, dataProvider = "validSubscriptionData")
     public void verifySubscriptionWithValidEmail(String email) throws IOException {
         ExtentTest test = extent.createTest("TC_TestCase_014 - Verify Subscription with Valid Email: " + email);
         testcasePage = new TestcasesPage(driver);
@@ -331,34 +332,29 @@ public class TestCasesPageTest_Functional extends BaseTest {
         }
     }
 
-    @Test(priority = 16, dataProvider = "invalidSubscriptionData")
-    public void verifySubscriptionWithInvalidEmail(String email) throws IOException {
-        ExtentTest test = extent.createTest("TC_TestCase_015 - Verify Subscription with Invalid Email: " + email);
-        testcasePage = new TestcasesPage(driver);
+    @Test(priority = 15, dataProvider = "invalidSubscriptionData")
+    	public void verifySubscriptionInvalid(String invalidEmail) throws IOException, InterruptedException {
+            test = extent.createTest("TC_TestCase_015 - Verify Subscription with Invalid Email: \" + email");
 
-        testcasePage.enterSubscription(email);
-        testcasePage.clickSubscriptionButton();
+            WebElement subscriptionField = driver.findElement(By.id("susbscribe_email"));
+            subscriptionField.clear();
+            subscriptionField.sendKeys(invalidEmail);
+            test.pass("Entered invalid email in subscription field: " + invalidEmail);
+            test.pass("Subscription field accepts input properly");
+            test.pass("Ready to validate invalid email submission");
 
-        boolean isSuccessDisplayed = testcasePage.isSubscriptionSuccessDisplayed();
+            testcasePage.clickSubscriptionButton();
+            test.pass("Clicked Subscribe button");
 
-        try {
-            Assert.assertFalse(isSuccessDisplayed, "Invalid email should not be accepted: " + email);
+            Thread.sleep(2000);
 
-            String screenshotPath = Screenshotutilities.capturescreen(driver, "TC_TestCase_015_Pass_" + email);
-            test.pass("✅ Subscription error shown for invalid email: " + email).addScreenCaptureFromPath(screenshotPath);
-            test.pass("No success message displayed for email: " + email);
-            test.pass("Subscription validation executed with invalid input");
-
-        } catch (AssertionError e) {
-            String screenshotPath = Screenshotutilities.capturescreen(driver, "TC_TestCase_015_Fail_" + email);
-            test.fail("❌ Subscription unexpectedly succeeded for invalid email: " + email).addScreenCaptureFromPath(screenshotPath);
-            test.fail("Failure reason: " + e.getMessage());
-            test.fail("Validation for invalid input not enforced");
-
-            throw e; 
+            String validationMessage = subscriptionField.getAttribute("validationMessage");
+            Assert.assertTrue(validationMessage.contains("Please include an '@'"),
+                    "Subscription accepted invalid email!");
+            test.pass("Validation message displayed correctly for invalid email: " + validationMessage)
+                .addScreenCaptureFromPath(Screenshotutilities.capturescreen(driver, "SubscriptionInvalid"));
         }
-    }
-
+    
     @Test(priority = 14)
     public void verifySubscriptionWithEmptyEmail() throws IOException {
         ExtentTest test = extent.createTest("TC_TestCase_016 - Verify Subscription with Empty Email");
